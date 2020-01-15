@@ -3,7 +3,9 @@
 namespace TCG\Voyager\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 use TCG\Voyager\Facades\Voyager;
 
@@ -49,6 +51,11 @@ class AdminCommand extends Command
         $user = $this->getUser(
             $this->option('create')
         );
+
+        // the user not returned
+        if (!$user) {
+            exit;
+        }
 
         // Get or create role
         $role = $this->getAdministratorRole();
@@ -111,27 +118,36 @@ class AdminCommand extends Command
     {
         $email = $this->argument('email');
 
-        $model = config('voyager.user.namespace', 'App\\User');
+        $model = Auth::guard(app('VoyagerGuard'))->getProvider()->getModel();
+        $model = Str::start($model, '\\');
 
         // If we need to create a new user go ahead and create it
         if ($create) {
             $name = $this->ask('Enter the admin name');
             $password = $this->secret('Enter admin password');
+            $confirmPassword = $this->secret('Confirm Password');
 
             // Ask for email if there wasnt set one
             if (!$email) {
                 $email = $this->ask('Enter the admin email');
             }
 
+            // Passwords don't match
+            if ($password != $confirmPassword) {
+                $this->info("Passwords don't match");
+
+                return;
+            }
+
             $this->info('Creating admin account');
 
-            return $model::create([
+            return call_user_func($model.'::create', [
                 'name'     => $name,
                 'email'    => $email,
                 'password' => Hash::make($password),
             ]);
         }
 
-        return $model::where('email', $email)->firstOrFail();
+        return call_user_func($model.'::where', 'email', $email)->firstOrFail();
     }
 }

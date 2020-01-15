@@ -13,8 +13,8 @@ return [
     'user' => [
         'add_default_role_on_register' => true,
         'default_role'                 => 'user',
-        'namespace'                    => App\User::class,
         'default_avatar'               => 'users/default.png',
+        'redirect'                     => '/admin',
     ],
 
     /*
@@ -47,17 +47,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Path to the Voyager Assets
-    |--------------------------------------------------------------------------
-    |
-    | Here you can specify the location of the voyager assets path
-    |
-    */
-
-    'assets_path' => '/vendor/tcg/voyager/assets',
-
-    /*
-    |--------------------------------------------------------------------------
     | Storage Config
     |--------------------------------------------------------------------------
     |
@@ -66,7 +55,7 @@ return [
     */
 
     'storage' => [
-        'disk' => 'public',
+        'disk' => env('FILESYSTEM_DRIVER', 'public'),
     ],
 
     /*
@@ -93,19 +82,8 @@ return [
         'tables' => [
             'hidden' => ['migrations', 'data_rows', 'data_types', 'menu_items', 'password_resets', 'permission_role', 'settings'],
         ],
+        'autoload_migrations' => true,
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | The prefix you wish to use with your voyager installation
-    |--------------------------------------------------------------------------
-    |
-    | specify the domain prefix you would like your users to visit in order
-    | to view the Voyager admin panel
-    |
-    */
-
-    'prefix' => 'admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -149,26 +127,24 @@ return [
     'dashboard' => [
         // Add custom list items to navbar's dropdown
         'navbar_items' => [
-            'Profile' => [
+            'voyager::generic.profile' => [
                 'route'      => 'voyager.profile',
                 'classes'    => 'class-full-of-rum',
                 'icon_class' => 'voyager-person',
             ],
-            'Home' => [
+            'voyager::generic.home' => [
                 'route'        => '/',
                 'icon_class'   => 'voyager-home',
                 'target_blank' => true,
             ],
-            'Logout' => [
+            'voyager::generic.logout' => [
                 'route'      => 'voyager.logout',
                 'icon_class' => 'voyager-power',
             ],
         ],
 
         'widgets' => [
-            'TCG\\Voyager\\Widgets\\UserDimmer',
-            'TCG\\Voyager\\Widgets\\PostDimmer',
-            'TCG\\Voyager\\Widgets\\PageDimmer',
+
         ],
 
     ],
@@ -182,11 +158,19 @@ return [
     |
     */
 
-    // When a BREAD is added, create the Menu item using the BREAD properties.
-    'add_bread_menu_item' => true,
+    'bread' => [
+        // When a BREAD is added, create the Menu item using the BREAD properties.
+        'add_menu_item' => true,
 
-    // When a BREAD is added, create the related Permission.
-    'add_bread_permission' => true,
+        // which menu add item to
+        'default_menu' => 'admin',
+
+        // When a BREAD is added, create the related Permission.
+        'add_permission' => true,
+
+        // which role add premissions to
+        'default_role' => 'admin',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -211,12 +195,66 @@ return [
     ],
 
     'googlemaps' => [
-         'key'    => env('GOOGLE_MAPS_KEY', ''),
-         'center' => [
-             'lat' => env('GOOGLE_MAPS_DEFAULT_CENTER_LAT', '32.715738'),
-             'lng' => env('GOOGLE_MAPS_DEFAULT_CENTER_LNG', '-117.161084'),
-         ],
-         'zoom' => env('GOOGLE_MAPS_DEFAULT_ZOOM', 11),
-     ],
+        'key'    => env('GOOGLE_MAPS_KEY', ''),
+        'center' => [
+            'lat' => env('GOOGLE_MAPS_DEFAULT_CENTER_LAT', '32.715738'),
+            'lng' => env('GOOGLE_MAPS_DEFAULT_CENTER_LNG', '-117.161084'),
+        ],
+        'zoom' => env('GOOGLE_MAPS_DEFAULT_ZOOM', 11),
+    ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Model specific settings
+    |--------------------------------------------------------------------------
+    |
+    | Here you change some model specific settings
+    |
+    */
+
+    'settings' => [
+        // Enables Laravel cache method for
+        // storing cache values between requests
+        'cache' => false,
+    ],
+
+    // Activate compass when environment is NOT local
+    'compass_in_production' => false,
+
+    'media' => [
+        // The allowed mimetypes to be uploaded through the media-manager.
+        'allowed_mimetypes' => '*', //All types can be uploaded
+        /*
+        'allowed_mimetypes' => [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/bmp',
+          'video/mp4',
+        ],
+        */
+        //Path for media-manager. Relative to the filesystem.
+        'path'                => '/',
+        'show_folders'        => true,
+        'allow_upload'        => true,
+        'allow_move'          => true,
+        'allow_delete'        => true,
+        'allow_create_folder' => true,
+        'allow_rename'        => true,
+        /*'watermark'           => [
+            'source'         => 'watermark.png',
+            'position'       => 'bottom-left',
+            'x'              => 0,
+            'y'              => 0,
+            'size'           => 15,
+       ],
+       'thumbnails'          => [
+           [
+                'type'  => 'fit',
+                'name'  => 'fit-500',
+                'width' => 500,
+                'height'=> 500
+           ],
+       ]*/
+    ],
 ];

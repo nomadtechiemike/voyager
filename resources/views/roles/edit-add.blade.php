@@ -1,6 +1,6 @@
 @extends('voyager::master')
 
-@section('page_title', __('voyager.generic.'.(isset($dataTypeContent->id) ? 'edit' : 'add')).' '.$dataType->display_name_singular)
+@section('page_title', __('voyager::generic.'.(isset($dataTypeContent->id) ? 'edit' : 'add')).' '.$dataType->getTranslatedAttribute('display_name_singular'))
 
 @section('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -9,7 +9,7 @@
 @section('page_header')
     <h1 class="page-title">
         <i class="{{ $dataType->icon }}"></i>
-        {{ __('voyager.generic.'.(isset($dataTypeContent->id) ? 'edit' : 'add')).' '.$dataType->display_name_singular }}
+        {{ __('voyager::generic.'.(isset($dataTypeContent->id) ? 'edit' : 'add')).' '.$dataType->getTranslatedAttribute('display_name_singular') }}
     </h1>
 @stop
 
@@ -47,28 +47,28 @@
 
                             @foreach($dataType->addRows as $row)
                                 <div class="form-group">
-                                    <label for="name">{{ $row->display_name }}</label>
+                                    <label for="name">{{ $row->getTranslatedAttribute('display_name') }}</label>
 
                                     {!! Voyager::formField($row, $dataType, $dataTypeContent) !!}
 
                                 </div>
                             @endforeach
 
-                            <label for="permission">{{ __('voyager.generic.permissions') }}</label><br>
-                            <a href="#" class="permission-select-all">{{ __('voyager.generic.select_all') }}</a> / <a href="#"  class="permission-deselect-all">{{ __('voyager.generic.deselect_all') }}</a>
+                            <label for="permission">{{ __('voyager::generic.permissions') }}</label><br>
+                            <a href="#" class="permission-select-all">{{ __('voyager::generic.select_all') }}</a> / <a href="#"  class="permission-deselect-all">{{ __('voyager::generic.deselect_all') }}</a>
                             <ul class="permissions checkbox">
                                 <?php
                                     $role_permissions = (isset($dataTypeContent)) ? $dataTypeContent->permissions->pluck('key')->toArray() : [];
                                 ?>
-                                @foreach(TCG\Voyager\Models\Permission::all()->groupBy('table_name') as $table => $permission)
+                                @foreach(Voyager::model('Permission')->all()->groupBy('table_name') as $table => $permission)
                                     <li>
                                         <input type="checkbox" id="{{$table}}" class="permission-group">
-                                        <label for="{{$table}}"><strong>{{title_case(str_replace('_',' ', $table))}}</strong></label>
+                                        <label for="{{$table}}"><strong>{{\Illuminate\Support\Str::title(str_replace('_',' ', $table))}}</strong></label>
                                         <ul>
                                             @foreach($permission as $perm)
                                                 <li>
                                                     <input type="checkbox" id="permission-{{$perm->id}}" name="permissions[]" class="the-permission" value="{{$perm->id}}" @if(in_array($perm->key, $role_permissions)) checked @endif>
-                                                    <label for="permission-{{$perm->id}}">{{title_case(str_replace('_', ' ', $perm->key))}}</label>
+                                                    <label for="permission-{{$perm->id}}">{{\Illuminate\Support\Str::title(str_replace('_', ' ', $perm->key))}}</label>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -77,7 +77,7 @@
                             </ul>
                         </div><!-- panel-body -->
                         <div class="panel-footer">
-                            <button type="submit" class="btn btn-primary">{{ __('voyager.generic.submit') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('voyager::generic.submit') }}</button>
                         </div>
                     </form>
 

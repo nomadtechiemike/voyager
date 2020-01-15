@@ -8,11 +8,9 @@ class ViewEventTest extends TestCase
 {
     public $eventTrigered = false;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-
-        $this->install();
 
         $this->disableExceptionHandling();
 
